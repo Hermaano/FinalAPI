@@ -1,5 +1,7 @@
 const Post = require("../Model/postModel");
 
+const  Cloudinary  = require("../MiddleWare/Cloudinary");
+
 const getAllPosts = async (req, res) => {
   try {
     const posts = await Post.find({});
@@ -37,6 +39,8 @@ const createPost = async (req, res) => {
 
      console.log(req.file);
 
+     const upload = await Cloudinary.uploader.upload(req.file.path);
+
      // filename
 
     if(!(title && description && postType)) {
@@ -47,12 +51,11 @@ const createPost = async (req, res) => {
       return res.status(400).json({ message: "Please upload a file" });
     }
 
-
     const post = await Post.create({
       title,
       description,
       postType,
-      image: req.file.filename,
+      image: upload.secure_url,
       email : user
     });
 
